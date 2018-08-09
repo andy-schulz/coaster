@@ -1,0 +1,38 @@
+{
+  "name": "coaster",
+  "version": "0.0.1",
+  "description": "OAS Tester",
+  "main": "tbd",
+  "author": {
+    "name": "Andy Schulz",
+    "email": "tbd",
+    "url": "tbd"
+  },
+  "contributors": [
+    {
+      "name": "Waldemar Siebert",
+      "email": "tbd",
+      "url": "tbd"
+    }
+  ],
+  "scripts": {
+    "test": "jasmine"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^2.8.8",
+    "@types/node": "^6.0.87",
+    "jasmine": "^3.1.0",
+    "js-yaml": "^3.12.0",
+    "source-map-support": "^0.5.6"
+  },
+  "dependencies": {
+    "@types/js-yaml": "^3.11.2",
+    "@types/request": "^2.47.1",
+    "@types/request-promise-native": "^1.0.15",
+    "@types/yargs": "^11.0.0",
+    "log4js": "^2.8.0",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5",
+    "yargs": "^12.0.1"
+  }
+}
