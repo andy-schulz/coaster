@@ -2,6 +2,8 @@ import  "jasmine";
 import {RequestParameterQuery} from "../../scr/model/RequestParameterQuery";
 import {OASParameter, OASParameterQueryStyle} from "../../scr/openAPI/OASDocument";
 import {NotImplementedError} from "../../scr/model/NotImplementedError";
+import {RequestParameterFactory} from "../../scr/model/RequestParameterFactory";
+import {RequestParameterPath} from "../../scr/model/RequestParameterPath";
 
 describe("Given Parameter",() => {
    describe("of type query",() => {
@@ -192,6 +194,13 @@ describe("Given Parameter",() => {
 
            // expect(param.parameterText).toBe("?id=1,2,3,4");
 
+       });
+
+       it('should be returned by the factory - (test case id: 1b535fd1)', () => {
+           const factory = new RequestParameterFactory();
+           const param = factory.getParameter(query_parameter);
+
+           expect(param instanceof RequestParameterQuery).toBeTruthy("param not of type RequestParameterPath")
        });
 
        // it('should ', () => {

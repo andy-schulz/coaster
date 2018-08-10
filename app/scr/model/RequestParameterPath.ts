@@ -1,5 +1,5 @@
 import {RequestParameter, ValueType} from "./RequestParameter";
-import {OASParameter, OASParameterQueryStyle} from "../openAPI/OASDocument";
+import {OASParameter, OASParameterPathStyle, OASParameterQueryStyle} from "../openAPI/OASDocument";
 import {NotImplementedError} from "./NotImplementedError";
 import  {getLogger} from "log4js";
 
@@ -9,21 +9,19 @@ import  {getLogger} from "log4js";
  * https://swagger.io/docs/specification/serialization/
  */
 export class RequestParameterPath extends RequestParameter{
-    private readonly m_style: OASParameterQueryStyle;
+    private readonly m_style: OASParameterPathStyle;
     protected logger = getLogger(this.constructor.name);
 
     constructor (param: OASParameter) {
         super(param);
-
         this.logger.debug(`Creating Parameter ${JSON.stringify(param)}`);
-
     }
 
     protected expand(value: ValueType): string {
 
         const schemaType = this.m_parameter.schema.type;
-        const style = this.m_style;
-        const explode = this.m_explode;
+        const style = this.m_style ? this.m_style : "simple";
+        const explode = this.m_explode ? this.m_explode : false;
 
         this.m_parameterText = "?";
 
