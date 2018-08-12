@@ -2,48 +2,17 @@ import { getLogger } from 'log4js';
 import {OASParameter} from "../openAPI/OASDocument";
 
 
-export type ValueType = string | number | boolean |  string[] | number[] | boolean[];
+export type ValueType = string | number | boolean |  string[] | number[] | boolean[] | object;
 export abstract class RequestParameter {
 
     protected readonly logger = getLogger(this.constructor.name);
-
-    protected readonly m_type: string;
-    protected readonly m_name: string;
     private m_value: ValueType;
-
     protected m_parameterText: string = "";
-    private m_arrayDelimiter = ",";
-
     protected readonly m_parameter: OASParameter;
 
-    protected m_explode: boolean;
 
-    constructor(parameter: OASParameter) {
+    protected constructor(parameter: OASParameter) {
         this.m_parameter = parameter;
-
-
-        switch(parameter.in) {
-            case "query": {
-                break;
-            }
-            case "path": {
-                //statements;
-                break;
-            }
-            case "header": {
-                //statements;
-                break;
-            }
-            case "cookie": {
-                //statements;
-                break;
-            }
-            default: {
-                const message: string = `Given Parameter ${name} does not have a type of (query | path | header | cookie)`;
-                this.logger.error (message);
-                throw Error(message);
-            }
-        }
     }
 
     set value(value: ValueType) {
@@ -87,14 +56,12 @@ export abstract class RequestParameter {
         return true;
     }
 
-    protected expandArray(property: string, array: string[] | number[] | boolean[]): string[] {
-        let arr: string[] = [];
-        for (let elem of array) {
-            let text = `${elem}`;
-            arr.push(`${property}=${text}`)
-        }
+    get style() {
+        return this.m_parameter.style;
+    }
 
-        return arr;
+    get explode() {
+        return this.m_parameter.explode;
     }
 
     protected abstract expand (value: ValueType): string;
