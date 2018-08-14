@@ -53,9 +53,14 @@ export interface OASParameter {
     in: "path" | "query" | "cookie" | "header",
     description: string,
     required: boolean,
+    deprecated?: boolean,
+    allowEmptyValue?: boolean,
     style?: OASParameterPathStyle | OASParameterQueryStyle | OASParameterCookieStyle | OASParameterHeaderStyle
     explode?: boolean,
+    allowReserved?: boolean,
     schema?: OASParameterSchema,
+    example?: any,
+    examples?: Map<string,OASExampleObject | OASReferenceObject>,
     content?: OASParameterContent
 }
 
@@ -73,6 +78,14 @@ export interface OASParameterItems {
     type: OASTypes,
     enum: string[],
     default: string
+}
+
+export interface OASExampleObject {
+    notImplemented: boolean
+}
+
+export interface OASReferenceObject{
+    notImplemented: boolean
 }
 
 export type OASTypes = "string" | "number" | "boolean" | "array" | "object"

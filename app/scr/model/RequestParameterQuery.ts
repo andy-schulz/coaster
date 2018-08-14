@@ -1,6 +1,6 @@
 import {RequestParameter, ValueType} from "./RequestParameter";
-import {OASParameter, OASParameterQueryStyle} from "../openAPI/OASDocument";
-import {NotImplementedError} from "./NotImplementedError";
+import {OASParameter} from "../openAPI/OASDocument";
+import {NotImplementedError} from "./error/NotImplementedError";
 import  {getLogger} from "log4js";
 
 /**
@@ -9,33 +9,18 @@ import  {getLogger} from "log4js";
  * https://swagger.io/docs/specification/serialization/
  */
 export class RequestParameterQuery extends RequestParameter{
-    private readonly m_style: OASParameterQueryStyle;
     protected logger = getLogger(this.constructor.name);
 
     constructor (param: OASParameter) {
         super(param);
-
         this.logger.debug(`Creating Parameter ${JSON.stringify(param)}`);
-
-        if (param.style === undefined) {
-            this.m_style = "form";
-        } else {
-            this.m_style = param.style as OASParameterQueryStyle;
-        }
-
-        if (param.explode === undefined) {
-            this.m_explode = true;
-        } else {
-            this.m_explode = param.explode;
-        }
-
     }
 
     protected expand(value: ValueType): string {
 
         const schemaType = this.m_parameter.schema.type;
-        const style = this.m_style;
-        const explode = this.m_explode;
+        const style = this.style ? this.style : "form";
+        const explode = this.explode == undefined ? true : this.explode;
 
         this.m_parameterText = "?";
 
@@ -59,37 +44,31 @@ export class RequestParameterQuery extends RequestParameter{
         // expand an array
         }
         else if (schemaType === "array") {
-            let text = "";
+            this.logger.info(`Style: ${this.style} - Explode: ${this.explode}`);
+
             if (value instanceof Array) {
-                let delimiter = ",";
-                let arr: any[];
 
-                if (style === "form") {
-                    delimiter = ",";
-                } else if(style === "spaceDelimited") {
-                    delimiter = "%20";
-                } else if(style === "pipeDelimited") {
-                    delimiter = "|";
-                } else if(style === "deepObject") {
-                    const message = `Style 'deepObject' is not defined for value type 'array'`
-                    this.logger.warn(message);
-                    throw new NotImplementedError (message);
-
-                    // does not apply to array value types
+                let delimiter = "";
+                switch(style) {
+                    case "form":
+                        delimiter = ',';
+                        break;
+                    case "spaceDelimited":
+                        delimiter = "%20";
+                        break;
+                    case "pipeDelimited":
+                        delimiter = "|";
+                        break;
+                    case "deepObject":
+                        const message = `Style 'deepObject' is not defined for value type 'array'`;
+                        this.logger.warn(message);
+                        throw new NotImplementedError("Style 'deepObject' is not defined for value type 'array'");
+                    default:
+                        break;
                 }
-
-                if (explode) {
-                    delimiter = "&";
-                    arr = this.expandArray(this.m_parameter.name, value)
-                } else {
-                    arr = value;
-                    if(arr.length > 0) {
-                        arr[0] = `${this.m_parameter.name}=${arr[0]}`
-                    }
-                }
-
-
-                this.m_parameterText = `?${arr.join(delimiter)}`;
+                this.m_parameterText = this.m_parameterText +
+                    `${this.m_parameter.name}=` +
+                    value.join(explode ? `&id=` : delimiter);
             }  else {
                 this.logger.warn(`Given value (${value}) is not of type '${schemaType}. I will use it as string and create the Parameter.`);
                 this.m_parameterText = `?${this.m_parameter.name}=${value.toString()}`
@@ -103,6 +82,6 @@ export class RequestParameterQuery extends RequestParameter{
             throw new NotImplementedError(message);
         }
 
-        return "TEST";
+        return this.m_parameterText;
     }
 }
